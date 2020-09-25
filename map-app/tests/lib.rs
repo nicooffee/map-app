@@ -1,7 +1,7 @@
 
 #[cfg(test)]
 pub mod scene_test{
-    use map_class::structure::scene::Scene;
+    use map_app::structure::scene::Scene;
     #[test]
     #[should_panic]
     pub fn neg_scene(){
@@ -12,7 +12,7 @@ pub mod scene_test{
 
 #[cfg(test)]
 pub mod screen_test{
-    use map_class::window::screen::Screen;
+    use map_app::window::screen::Screen;
     use termion::{
         terminal_size,
         screen::AlternateScreen,

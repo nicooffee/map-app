@@ -1,5 +1,5 @@
 [package]
-name = "map-class"
+name = "map-app"
 version = "0.1.0"
 authors = ["nicooffee <nicolas.honorato@usach.cl>"]
 edition = "2018"
