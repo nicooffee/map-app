@@ -1,8 +1,9 @@
 #[allow(dead_code)]
 extern crate termion;
-mod window;
-use window::screen::Screen;
-use window::screen::Panel;
+mod engine;
+use engine::window::screen::Screen;
+use engine::window::screen::Panel;
+use engine::structure::scenario;
 use std::{
     io::stdout,
     io::Write,
@@ -12,14 +13,15 @@ use std::{
 use termion::{
     screen::AlternateScreen,
     raw::IntoRawMode,
-    terminal_size
+    terminal_size,
+    color
 };
 
 fn main() {
     let mut s = Screen::new(AlternateScreen::from(stdout().into_raw_mode().unwrap()), 20);
     let (me_w,me_h,ma_w,ma_h) = s.get_sizes();
-    let str1 = format!("me: {},{} ma: {},{}",me_w,me_h,ma_w,ma_h);
-    s.write_f(Panel::Main,str1);
     s.initialize();
+    let scene = scenario::Scenario::new(5, 5, color::Rgb(255,255,255));
+    s.write_printable(1, 1, scene);
     thread::sleep(time::Duration::from_secs(2));
 }

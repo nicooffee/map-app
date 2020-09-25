@@ -1,18 +1,19 @@
 
 #[cfg(test)]
 pub mod scene_test{
-    use map_app::structure::scene::Scene;
+    use map_app::engine::structure::scenario::Scenario;
+    use termion::color;
     #[test]
     #[should_panic]
     pub fn neg_scene(){
-        let _s: Scene = Scene::new(0,100);
+        let _s: Scenario = Scenario::new(0,100,color::Rgb(0,0,0));
     }
 }
 
 
 #[cfg(test)]
 pub mod screen_test{
-    use map_app::window::screen::Screen;
+    use map_app::engine::window::screen::Screen;
     use termion::{
         terminal_size,
         screen::AlternateScreen,
