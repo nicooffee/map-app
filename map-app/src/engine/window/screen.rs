@@ -58,7 +58,7 @@ impl<W:Write> Screen<W> {
         ).unwrap();
     }
 
-    pub fn write_printable<P: printable::Printable>(&mut self,x_rel:u16,y_rel:u16,ptbl_obj: P) {
+    pub fn write_printable<P: printable::Printable>(&mut self,x_rel:u16,y_rel:u16,ptbl_obj: &P) {
         let x_abs = self.x_rel_to_abs(x_rel, Panel::Main);
         let y_abs = self.y_rel_to_abs(y_rel, Panel::Main);
         self.write_f(Panel::Main, ptbl_obj.str_format(x_abs, y_abs));
@@ -82,10 +82,14 @@ impl<W: Write> Screen<W> {
     pub fn w_height(&self) -> u16 {
         self.menu_h + 2
     }
-
-    pub fn get_sizes(&self) -> (u16,u16,u16,u16) {
-        (self.menu_w,self.menu_h,self.main_w,self.main_h)
+    
+    pub fn get_sizes(&self,panel: Panel) -> (u16,u16) {
+        match panel {
+            Panel::Main => (self.main_w,self.main_h),
+            Panel::Menu => (self.menu_w,self.menu_h)
+        }
     }
+    
     pub fn x_rel_to_abs(&self,x_rel:u16,panel: Panel) -> u16{
         match panel {
             Panel::Menu => x_rel + 1,

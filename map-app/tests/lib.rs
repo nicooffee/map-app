@@ -1,7 +1,7 @@
 
 #[cfg(test)]
 pub mod scene_test{
-    use map_app::engine::structure::scenario::Scenario;
+    use map_app::engine::structure::scenario::{Scenario};
     use termion::color;
     #[test]
     #[should_panic]
@@ -13,7 +13,7 @@ pub mod scene_test{
 
 #[cfg(test)]
 pub mod screen_test{
-    use map_app::engine::window::screen::Screen;
+    use map_app::engine::window::screen::{Screen,Panel};
     use termion::{
         terminal_size,
         screen::AlternateScreen,
@@ -30,7 +30,7 @@ pub mod screen_test{
         };
         let s_out = AlternateScreen::from(stdout().into_raw_mode().unwrap());
         let s = Screen::new(s_out, 20);
-        let (me_w,me_h,ma_w,_ma_h) = s.get_sizes();
+        let ((me_w,me_h),(ma_w,_ma_h)) = (s.get_sizes(Panel::Main),s.get_sizes(Panel::Menu));
         assert_eq!(d,(me_w+ma_w+3,me_h+2))
     }
 }
