@@ -4,7 +4,7 @@ mod engine;
 use engine::window::screen::Screen;
 use engine::window::screen::Panel;
 use engine::structure::scenario;
-use engine::engine::Engine;
+use engine::engine::{run,new};
 use std::{
     io::stdout,
     io::Write,
@@ -19,6 +19,6 @@ use termion::{
 };
 
 fn main() {
-    let mut e = Engine::new();
-    e.run();
+    let (s,m) = new();
+    run(s,m);
 }
