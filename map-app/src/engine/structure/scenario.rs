@@ -23,9 +23,14 @@ impl Scenario {
 
 
 impl printable::Printable for Scenario {
+
+    fn background_color(&self) -> color::Rgb{
+        self.background
+    }
+
     fn str_format(&self,x_abs:u16,y_abs:u16) -> String {
         let mut str_fmt: String = String::from("");
-        str_fmt.push_str(&format!("{}",color::Bg(self.background)));
+        str_fmt.push_str(&format!("{}",color::Bg(self.background_color())));
         for i in 0..(self.height) {
             str_fmt.push_str(&format!("{}",cursor::Goto(x_abs,y_abs+i)));
             for _ in 0..self.width{

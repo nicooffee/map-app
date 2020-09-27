@@ -1,3 +1,4 @@
+use super::super::direction::Dir as D;
 pub struct Node<S> {
     object: S,
     pos: (i32,i32),
@@ -20,8 +21,7 @@ impl<S> Node<S> {
     }
 
     pub fn from_pos(object: S, pos: (i32,i32)) -> Node<S> {
-        let (x,y) = pos;
-        Node::new(object, pos, (x,y-1), (x,y+1), (x-1,y), (x+1,y))
+        Node::new(object, pos, D::Up.of(pos), D::Down.of(pos), D::Left.of(pos), D::Right.of(pos))
     }
 
 }
