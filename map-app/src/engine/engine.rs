@@ -24,7 +24,7 @@ use super::structure::map::Map;
 use super::structure::direction::Dir;
 use super::structure::character::Character;
 use crate::engine::traits::printable::Printable;
-const DELAY: u64 = 5000;
+const DELAY: u64 = 10000;
 
 pub fn new() -> (Screen<RawTerminal<Stdout>>,Map,Character) {
     let s_bg = color::Rgb(0,51,51);
@@ -139,11 +139,37 @@ fn run_character(
     rx_character: Receiver<Dir>
 ){
     loop {
-        let dir = rx_character.recv().unwrap();
-        {
+        {q
             let mut character = character.lock().unwrap();
-            character.move_chr(dir);
+            if let Ok(dir) = rx_character.try_recv(){
+                character.move_chr(dir);
+            }
         }
+        thread::sleep(time::Duration::from_micros(DELAY));
         if let Ok(_) = rx_exit.try_recv(){break;};
     }
 }
+
+/*try_recv
+loop {
+    {
+        let mut character = character.lock().unwrap();
+        if let Ok(dir) = rx_character.try_recv(){
+            character.move_chr(dir);
+        }
+    }
+    thread::sleep(time::Duration::from_micros(DELAY));
+    if let Ok(_) = rx_exit.try_recv(){break;};
+}
+*/
+/*recv
+loop {
+    let dir = rx_character.recv().unwrap();
+    {
+        let mut character = character.lock().unwrap();
+        character.move_chr(dir);
+    }
+    thread::sleep(time::Duration::from_micros(DELAY));
+    if let Ok(_) = rx_exit.try_recv(){break;};
+}
+*/
