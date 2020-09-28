@@ -16,6 +16,7 @@ use termion::{
 
 pub struct Screen<W: Write> {
     window: AlternateScreen<W>,
+    w_bg_color: color::Rgb,
     menu_w: u16,
     menu_h: u16,
     main_w: u16,
@@ -27,8 +28,13 @@ pub enum Panel {
     Main
 }
 
+pub enum TextLine {
+    TITLE
+}
+
+
 impl<W:Write> Screen<W> {
-    pub fn new(window: AlternateScreen<W>,menu_percent: u16) -> Screen<W>{
+    pub fn new(window: AlternateScreen<W>,w_bg_color: color::Rgb,menu_percent: u16) -> Screen<W>{
         let (width,height) = match terminal_size(){
             Ok((w,h)) => (w,h),
             Err(e) => panic!("Error al crear Screen: {}",e)
@@ -36,6 +42,7 @@ impl<W:Write> Screen<W> {
         
         Screen {
             window: window,
+            w_bg_color: w_bg_color,
             menu_w: (width * menu_percent / 100) - 1,
             menu_h: height -2,
             main_w: width - ((width * menu_percent / 100)) - 2,
@@ -44,25 +51,32 @@ impl<W:Write> Screen<W> {
     }
 
     pub fn initialize(&mut self) {
-        write!(self.window,"{}{}",clear::All,cursor::Hide).unwrap();
+        write!(self.window,"{}{}{}",color::Bg(self.w_bg_color),clear::All,cursor::Hide).unwrap();
         self.window.w_box(1,1,self.w_width(),self.w_height(),None,None);
         self.window.w_line_v(self.border2(),2,self.menu_h,'|');
         self.window.flush().unwrap();
     }
 
-    pub fn write_f(&mut self,panel: Panel,formatted_str: String) {
-        writeln!(self.window,"{}{}{}",
+    fn write_f(&mut self,formatted_str: String) {
+        write!(self.window,"{}{}{}",
             formatted_str,
             color::Fg(color::Reset),
-            color::Bg(color::Reset)
+            color::Bg(self.w_bg_color)
         
         ).unwrap();
+    }
+
+    pub fn write_menu(&mut self,text_line: TextLine,text: &str) {
+        let (x_rel,y_rel) = self.coord_menu(text_line);
+        let x_abs = self.x_rel_to_abs(x_rel, Panel::Menu);
+        let y_abs = self.y_rel_to_abs(y_rel, Panel::Menu);
+        self.write_f(format!("{}{}{}",cursor::Goto(x_abs,y_abs),color::Bg(self.w_bg_color),text));
     }
 
     pub fn write_printable<P: printable::Printable>(&mut self,x_rel:u16,y_rel:u16,ptbl_obj: &P) {
         let x_abs = self.x_rel_to_abs(x_rel, Panel::Main);
         let y_abs = self.y_rel_to_abs(y_rel, Panel::Main);
-        self.write_f(Panel::Main, ptbl_obj.str_format(x_abs, y_abs));
+        self.write_f(ptbl_obj.str_format(x_abs, y_abs));
     }
 }
 
@@ -103,7 +117,14 @@ impl<W: Write> Screen<W> {
             Panel::Main => y_rel + 1
         }
     }
+
+    fn coord_menu(&self,text_line: TextLine) -> (u16,u16) {
+        match text_line {
+            TextLine::TITLE => (1,1)
+        }
+    }
 }
+
 
 
 impl<W: Write> Write for Screen<W> {

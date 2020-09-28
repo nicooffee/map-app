@@ -19,6 +19,6 @@ use termion::{
 };
 
 fn main() {
-    let (s,m) = new();
-    run(s,m);
+    let (s,m,c) = new();
+    run(s,m,c);
 }
