@@ -51,7 +51,7 @@ impl<W:Write> Screen<W> {
     }
 
     pub fn initialize(&mut self) {
-        write!(self.window,"{}{}{}",color::Bg(self.w_bg_color),clear::All,cursor::Hide).unwrap();
+        write!(self.window,"{}{}{}{}",termion::style::Bold,color::Bg(self.w_bg_color),clear::All,cursor::Hide).unwrap();
         self.window.w_box(1,1,self.w_width(),self.w_height(),None,None);
         self.window.w_line_v(self.border2(),2,self.menu_h,'|');
         self.window.flush().unwrap();

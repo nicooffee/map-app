@@ -23,14 +23,15 @@ use super::window::screen::{
 use super::structure::map::Map;
 use super::structure::direction::Dir;
 use super::structure::character::Character;
-const DELAY: u64 = 1000;
+use crate::engine::traits::printable::Printable;
+const DELAY: u64 = 5000;
 
 pub fn new() -> (Screen<RawTerminal<Stdout>>,Map,Character) {
     let s_bg = color::Rgb(0,51,51);
     let s = Screen::new(AlternateScreen::from(stdout().into_raw_mode().unwrap()),s_bg, 20);
     let (main_w,main_h) = s.get_sizes(Panel::Main);
     let m = Map::new((main_w/2,main_w),(main_h/2,main_h));
-    let c = Character::new((1,1), '*', color::Rgb(200,200,200),s_bg);
+    let c = Character::new((1,1), '*', color::Rgb(200,200,200),m.current_scenario().background_color());
     (s,m,c)
 }
 
@@ -119,10 +120,12 @@ fn run_main(
                 let map = map.lock().unwrap();
                 screen.write_printable(1, 1, map.current_scenario());
             }
-            let character = character.lock().unwrap();
-            let (x,y) = character.pos();
-            //Fix this
-            screen.write_printable(x as u16,y as u16,&*character);
+            {
+                let character = character.lock().unwrap();
+                let (x,y) = character.pos();
+                //Fix this
+                screen.write_printable(x as u16,y as u16,&*character);
+            }
             screen.flush().unwrap();
         }
         if let Ok(_) = rx_exit.try_recv(){break;};

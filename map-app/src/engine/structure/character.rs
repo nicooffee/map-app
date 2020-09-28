@@ -43,7 +43,8 @@ impl printable::Printable for Character {
 
     fn str_format(&self,x_abs:u16,y_abs:u16) -> String {
         let mut str_fmt: String = String::from("");
-        str_fmt.push_str(&format!("{}{}{}",
+        str_fmt.push_str(&format!("{}{}{}{}",
+            color::Bg(self.background_color()),
             color::Fg(self.fg_color),
             cursor::Goto(x_abs,y_abs),
             self.sym
