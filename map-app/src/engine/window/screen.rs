@@ -29,7 +29,8 @@ pub enum Panel {
 }
 
 pub enum TextLine {
-    TITLE
+    TITLE,
+    CHAR_POS
 }
 
 
@@ -66,6 +67,7 @@ impl<W:Write> Screen<W> {
         ).unwrap();
     }
 
+
     pub fn write_menu(&mut self,text_line: TextLine,text: &str) {
         let (x_rel,y_rel) = self.coord_menu(text_line);
         let x_abs = self.x_rel_to_abs(x_rel, Panel::Menu);
@@ -73,9 +75,14 @@ impl<W:Write> Screen<W> {
         self.write_f(format!("{}{}{}",cursor::Goto(x_abs,y_abs),color::Bg(self.w_bg_color),text));
     }
 
-    pub fn write_printable<P: printable::Printable>(&mut self,x_rel:u16,y_rel:u16,ptbl_obj: &P) {
+    pub fn write_printable<P: printable::Printable>(&mut self,ptbl_obj: &P,bg_default: color::Rgb) {
+        let (x_rel,y_rel) = ptbl_obj.rel_pos();
+        let (x_rel_last,y_rel_last) = ptbl_obj.rel_pos_last();
+        let x_abs_last = self.x_rel_to_abs(x_rel_last, Panel::Main);
+        let y_abs_last = self.y_rel_to_abs(y_rel_last, Panel::Main);
         let x_abs = self.x_rel_to_abs(x_rel, Panel::Main);
         let y_abs = self.y_rel_to_abs(y_rel, Panel::Main);
+        self.write_f(ptbl_obj.del_format(x_abs_last, y_abs_last, bg_default));
         self.write_f(ptbl_obj.str_format(x_abs, y_abs));
     }
 }
@@ -120,7 +127,8 @@ impl<W: Write> Screen<W> {
 
     fn coord_menu(&self,text_line: TextLine) -> (u16,u16) {
         match text_line {
-            TextLine::TITLE => (1,1)
+            TextLine::TITLE     => (1,1),
+            TextLine::CHAR_POS  => (2,1)
         }
     }
 }
