@@ -139,7 +139,7 @@ fn run_character(
     rx_character: Receiver<Dir>
 ){
     loop {
-        {q
+        {
             let mut character = character.lock().unwrap();
             if let Ok(dir) = rx_character.try_recv(){
                 character.move_chr(dir);
